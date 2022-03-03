@@ -170,14 +170,15 @@ Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload& payload)
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular* 
         // components are. Then, accumulate that result on the *result_color* object.
 
-        //光的方向，视线方向，
+        //光的方向，视线方向，衰减因子        
         Eigen::Vector3f light_dir = light.position - point;
         Eigen::Vector3f view_dir = eye_pos - point;
         float r = light_dir.dot(light_dir);
 
-        Eigen::Vector3f La = ka * amb_light_intensity;
-        Eigen::Vector3f Ld = kd * (light.intensity / r);// *MAX(0, normal * light.position);
-        Eigen::Vector3f Ls = ks * (light.intensity / r);
+        //La-环境光照，Ld-漫反射，Ls-高光
+        Eigen::Vector3f La = ka.cwiseProduct(amb_light_intensity);
+        Eigen::Vector3f Ld = kd.cwiseProduct(light.intensity / r);// *MAX(0, normal * light.position);
+        Eigen::Vector3f Ls = ks.cwiseProduct(light.intensity / r);
 
         result_color += La + Ld + Ls;
     }
