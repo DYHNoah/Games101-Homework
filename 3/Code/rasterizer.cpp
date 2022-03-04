@@ -312,7 +312,6 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t, const std::array<Eig
                     payload.view_pos = interpolated_shadingcoords;
                     auto pixel_color = fragment_shader(payload);
                     set_pixel(Eigen::Vector2i(x, y), pixel_color);
-                    //std::cout << z_interpolated << std::endl;
                 }              
             }
         }
