@@ -24,6 +24,11 @@ public:
 
     Eigen::Vector3f getColor(float u, float v)
     {
+        // ×ø±êÏÞ¶¨
+        if (u < 0) u = 0.0f;
+        if (u > 1) u = 0.999f;
+        if (v < 0) v = 0.0f;
+        if (v > 1) v = 0.999f;
         auto u_img = u * width;
         auto v_img = (1 - v) * height;
         auto color = image_data.at<cv::Vec3b>(v_img, u_img);
