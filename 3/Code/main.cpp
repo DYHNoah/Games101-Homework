@@ -111,7 +111,7 @@ Eigen::Vector3f texture_fragment_shader(const fragment_shader_payload& payload)
     if (payload.texture)
     {
         // TODO: Get the texture value at the texture coordinates of the current fragment
-
+        
     }
     Eigen::Vector3f texture_color;
     texture_color << return_color.x(), return_color.y(), return_color.z();
@@ -170,15 +170,24 @@ Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload& payload)
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular* 
         // components are. Then, accumulate that result on the *result_color* object.
 
-        //光的方向，视线方向，衰减因子        
-        Eigen::Vector3f light_dir = light.position - point;
+        //光的方向，视线方向，半程向量，衰减因子        
+        Eigen::Vector3f light_dir = (light.position - point);
         Eigen::Vector3f view_dir = eye_pos - point;
+        Eigen::Vector3f half_dir = (view_dir + light_dir).normalized();
+
+        light_dir = light_dir.normalized();
+        view_dir = view_dir.normalized();
         float r = light_dir.dot(light_dir);
 
         //La-环境光照，Ld-漫反射，Ls-高光
         Eigen::Vector3f La = ka.cwiseProduct(amb_light_intensity);
-        Eigen::Vector3f Ld = kd.cwiseProduct(light.intensity / r);// *MAX(0, normal * light.position);
+
+        Eigen::Vector3f Ld = kd.cwiseProduct(light.intensity / r);
+        Ld *= std::max(0.0f, normal.dot(light_dir));
+
         Eigen::Vector3f Ls = ks.cwiseProduct(light.intensity / r);
+        Ls *= pow(std::max(0.0f, normal.dot(half_dir)), p);
+        //Ls *= MAX(0, normal.dot(half_dir));
 
         result_color += La + Ld + Ls;
     }
